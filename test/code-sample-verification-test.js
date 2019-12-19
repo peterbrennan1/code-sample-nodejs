@@ -38,7 +38,7 @@ describe('the code sample', function () {
   });
 
   // TODO (extra credit) enable this test if you implement the GSI query in src/read-data.js
-  it.skip('(extra credit) can query for SchoolStudent records by studentLastName', async function () {
+  it('(extra credit) can query for SchoolStudent records by studentLastName', async function () {
     const schoolId = uuid();
     const studentId = uuid();
 
@@ -64,7 +64,7 @@ describe('the code sample', function () {
   });
 
   // TODO uncomment this test if you implement retrieval of multiple pages of data
-  it.skip('returns all pages of data', async function () {
+  it('returns all pages of data', async function () {
     let createdRecords = 0;
     const schoolId = uuid();
     while (createdRecords++ < 10) {
@@ -86,6 +86,24 @@ describe('the code sample', function () {
     assert.equal(queryResult.length, 10, 'Expected to find ten results');
   });
 
+
+  it('return an error message if there is a schema error', async function () {
+    const schoolStudent = {
+      schoolId: uuid(),
+      schoolName: 'NWEA Test School',
+      studentId: uuid(),
+      studentFirstName: 'John',
+      studentLastName: 'Robertson',
+      studentGrade: 5,
+    };
+
+    await writeData.handler(schoolStudent);
+
+    let result = await writeData.handler(schoolStudent);
+    assert.equal(result.message, "Encountered schema errors. Count=1", 'Expected a schema error.');
+
+
+  });
 
   // This section starts the local DynamoDB database
   before(async function () {

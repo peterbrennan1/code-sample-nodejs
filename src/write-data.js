@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+var Validator = require('jsonschema').Validator;
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
   apiVersion: '2012-08-10',
@@ -20,8 +21,35 @@ const tableName = 'SchoolStudents';
  * @param {string} event.studentLastName
  * @param {string} event.studentGrade
  */
-exports.handler = (event) => {
-  // TODO validate that all expected attributes are present (assume they are all required)
-  // TODO use the AWS.DynamoDB.DocumentClient to save the 'SchoolStudent' record
-  // The 'SchoolStudents' table key is composed of schoolId (partition key) and studentId (range key).
+exports.handler = async (event) => {
+  //√ validate that all expected attributes are present (assume they are all required)
+
+  var v = new Validator();
+  var schema = {
+    "id": "/Student",
+    "type": "object",
+    "properties": {
+      "schoolId": { "type": "string" },
+      "schoolName": { "type": "string" },
+      "studentId": { "type": "string" },
+      "studentFirstName": { "type": "string" },
+      "studentLastName": { "type": "string" },
+      "studentGrade": { "type": "string" }
+    }
+  }
+
+  v.addSchema(schema, '/Student');
+  let result = v.validate(event, schema);
+  if(result.errors.length > 0) {
+    let msg = { "message": "Encountered schema errors. Count=" + result.errors.length};
+    return msg;
+  }
+
+
+  var params = {
+    TableName : tableName,
+    Item: event
+  };
+  
+  return await dynamodb.put(params).promise();
 };
