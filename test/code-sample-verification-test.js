@@ -37,7 +37,7 @@ describe('the code sample', function () {
     assert.deepEqual(queryResult[0], schoolStudent, 'Expected the query result to match what we saved');
   });
 
-  // TODO (extra credit) enable this test if you implement the GSI query in src/read-data.js
+  // (extra credit) enable this test if you implement the GSI query in src/read-data.js
   it('(extra credit) can query for SchoolStudent records by studentLastName', async function () {
     const schoolId = uuid();
     const studentId = uuid();
@@ -63,7 +63,7 @@ describe('the code sample', function () {
     assert.deepEqual(queryResult[0], schoolStudent, 'Expected the query result to match what we saved');
   });
 
-  // TODO uncomment this test if you implement retrieval of multiple pages of data
+  // uncomment this test if you implement retrieval of multiple pages of data
   it('returns all pages of data', async function () {
     let createdRecords = 0;
     const schoolId = uuid();
@@ -101,8 +101,6 @@ describe('the code sample', function () {
 
     let result = await writeData.handler(schoolStudent);
     assert.equal(result.message, "Encountered schema errors. Count=1", 'Expected a schema error.');
-
-
   });
 
   // This section starts the local DynamoDB database
