@@ -1,14 +1,25 @@
-const AWS = require('aws-sdk');
+const AWS = require("aws-sdk");
 
 const dynamodb = new AWS.DynamoDB.DocumentClient({
-  apiVersion: '2012-08-10',
-  endpoint: new AWS.Endpoint('http://localhost:8000'),
-  region: 'us-west-2',
+  apiVersion: "2012-08-10",
+  endpoint: new AWS.Endpoint("http://localhost:8000"),
+  region: "us-west-2",
   // what could you do to improve performance?
 });
 
-const tableName = 'SchoolStudents';
+const tableName = "SchoolStudents";
+function validation(inputObjs, requiredProps) {
+  let missingProps = [];
 
+  for (prop of requiredProps) {
+    if (!inputObjs.hasOwnProperty(prop)) {
+      missingProps.push(prop);
+    }
+  }
+  if (missingProps.length > 0) {
+    throw new Error("Missing required attributes");
+  }
+}
 /**
  * The entry point into the lambda
  *
@@ -22,6 +33,21 @@ const tableName = 'SchoolStudents';
  */
 exports.handler = (event) => {
   // TODO validate that all expected attributes are present (assume they are all required)
-  // TODO use the AWS.DynamoDB.DocumentClient to save the 'SchoolStudent' record
-  // The 'SchoolStudents' table key is composed of schoolId (partition key) and studentId (range key).
+
+  const validFields = [
+    "schoolId",
+    "schoolName",
+    "studentId",
+    "studentFirstName",
+    "studentLastName",
+    "studentGrade",
+  ];
+
+  try {
+    validation(event, validFields);
+  } catch (err) {
+    throw err;
+  }
+
+  return dynamodb.put({ TableName: tableName, Item: event }).promise();
 };
